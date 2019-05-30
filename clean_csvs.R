@@ -1,14 +1,15 @@
 library(tidyverse)
 library(lubridate)
 library(purrr)
-fixtures <- read_csv("Snooker 18-19.csv") %>%
+library(calendar)
+fixtures <- read_csv("./LR_Calendar/Brighton Summer 19.csv") %>%
   filter(!is.na(Division)) %>%
   rename(division = Division, home_team = `Home Team`, away_team = `Away Team`,
          date = Date, time = Time, venue = Venue) %>%
   mutate(home_team = str_replace_all(home_team, "  ", " "),
          away_team = str_replace_all(away_team, "  ", " ")) %>%
   select(division, home_team, away_team, date, time, venue)
-write_csv(fixtures, "BHDBSL Snooker 18-19.csv")
+# write_csv(fixtures, "BHDBSL Snooker 18-19.csv")
 
 create_single_ics <- function(fixtures_df, chosen_team, home_away_suffix) {
   my_fixtures <- fixtures_df %>%
@@ -33,5 +34,5 @@ create_single_ics <- function(fixtures_df, chosen_team, home_away_suffix) {
 }
 
 all_teams <- unique(c(fixtures$home_team, fixtures$away_team))
-pmap(list(list(fixtures), all_teams, rep(TRUE, length(all_teams))),
+pmap(list(list(fixtures), all_teams, rep(FALSE, length(all_teams))),
      create_single_ics)
